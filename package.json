@@ -1,0 +1,14 @@
+{
+  "name": "ai-copilot-onboarding",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev:backend": "pnpm --dir backend dev",
+    "dev:client": "pnpm --dir client dev",
+    "dev:all": "concurrently --kill-others-on-fail --names backend,client --prefix-colors blue,magenta \"pnpm dev:backend\" \"pnpm dev:client\"",
+    "install:all": "pnpm --dir backend install && pnpm --dir client install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

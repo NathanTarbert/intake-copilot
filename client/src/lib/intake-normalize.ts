@@ -98,5 +98,6 @@ export function isValidFor(field: IntroField, value: string): boolean {
   if (!value) return false;
   if (field === "email") return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   if (field === "phone") return /^[\d()\-\s+]{7,}$/.test(value);
+  if (field === "name") return value.length >= 2 && /^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]+$/.test(value);
   return value.length >= 2;
 }

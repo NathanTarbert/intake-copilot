@@ -20,6 +20,7 @@ import {
 } from "@/lib/intake-flow";
 import { detectRedFlags } from "@/lib/red-flags";
 import { recommendDoctor } from "@/lib/doctors";
+import { buildIntakeSummary } from "@/lib/build-summary";
 
 export type IntakeState = {
   currentStep?: StepId;
@@ -415,7 +416,7 @@ export function OnboardingShell() {
             email={state.patient?.email ?? ""}
             reason={state.reason ?? ""}
             concerns={state.concerns ?? []}
-            summary={state.summary ?? ""}
+            summary={state.summary?.trim() || buildIntakeSummary(state)}
             visitType={state.recommendedVisitType ?? ""}
             redFlags={redFlags}
             doctor={state.recommendedDoctor}

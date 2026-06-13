@@ -1,24 +1,12 @@
 services:
   - type: web
-    name: intake-copilot-backend
+    name: intake-copilot
     runtime: node
     rootDir: backend
-    buildCommand: npx --yes pnpm@11 install --ignore-scripts && node node_modules/esbuild/install.js
+    buildCommand: "cd .. && npx --yes pnpm@11 --dir client install --ignore-scripts && npx pnpm@11 --dir client build && npx pnpm@11 --dir backend install --ignore-scripts"
     startCommand: npx pnpm@11 start
     envVars:
       - key: NODE_VERSION
         value: 22
       - key: OPENAI_API_KEY
-        sync: false
-
-  - type: web
-    name: intake-copilot-client
-    runtime: static
-    rootDir: client
-    buildCommand: npx --yes pnpm@11 install && npx pnpm@11 build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_RUNTIME_URL
-        sync: false
-      - key: VITE_MAPBOX_TOKEN
         sync: false

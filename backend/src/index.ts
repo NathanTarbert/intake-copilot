@@ -2,6 +2,9 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
+import { fileURLToPath } from "url";
+import path from "path";
+import fs from "fs";
 import {
   CopilotRuntime,
   ExperimentalEmptyAdapter,
@@ -71,6 +74,16 @@ app.post(
 );
 
 app.use(ENDPOINT, copilotHandler);
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const clientDist = path.join(__dirname, "../../client/dist");
+
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get("*", (_req, res) =>
+    res.sendFile(path.join(clientDist, "index.html"))
+  );
+}
 
 app.listen(PORT, () => {
   console.log(`[CopilotKit] Listening on http://localhost:${PORT}${ENDPOINT}`);

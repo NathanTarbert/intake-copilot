@@ -3,11 +3,11 @@ services:
     name: intake-copilot-backend
     runtime: node
     rootDir: backend
-    buildCommand: npm install -g pnpm && pnpm install
+    buildCommand: npm install -g pnpm && cd .. && pnpm --dir backend install
     startCommand: pnpm start
     envVars:
       - key: NODE_VERSION
-        value: 20
+        value: 22
       - key: OPENAI_API_KEY
         sync: false
 
@@ -15,7 +15,7 @@ services:
     name: intake-copilot-client
     runtime: static
     rootDir: client
-    buildCommand: npm install -g pnpm && pnpm install && pnpm build
+    buildCommand: npm install -g pnpm && cd .. && pnpm --dir client install && pnpm --dir client build
     staticPublishPath: dist
     envVars:
       - key: VITE_RUNTIME_URL

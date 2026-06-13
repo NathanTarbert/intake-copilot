@@ -19,18 +19,38 @@ function joinSpelled(token: string): string {
   return formatted + tail;
 }
 
+const STATE_ABBREVS = new Set([
+  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
+  "KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
+  "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT",
+  "VA","WA","WV","WI","WY","DC",
+]);
+
+function titleCaseWord(word: string): string {
+  if (!word) return word;
+  const upper = word.toUpperCase();
+  if (STATE_ABBREVS.has(upper)) return upper;
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
 export function normalizeAddress(raw: string): string {
   let s = raw.trim();
-  // Trailing period Whisper often appends.
   s = s.replace(/[.;!?]+$/g, "");
-  // Stitch spelled-out tokens.
   s = s
     .split(/\s+/)
     .map(joinSpelled)
+    .map(titleCaseWord)
     .join(" ");
-  // Collapse stray double commas.
   s = s.replace(/,\s*,/g, ",").replace(/\s+,/g, ",");
   return s;
+}
+
+export function normalizeName(raw: string): string {
+  return raw
+    .trim()
+    .split(/\s+/)
+    .map(titleCaseWord)
+    .join(" ");
 }
 
 export function normalizeEmail(raw: string): string {
@@ -70,6 +90,7 @@ export function normalizeFor(field: IntroField, raw: string): string {
   if (field === "email") return normalizeEmail(raw);
   if (field === "phone") return normalizePhone(raw);
   if (field === "address") return normalizeAddress(raw);
+  if (field === "name") return normalizeName(raw);
   return raw.trim();
 }
 

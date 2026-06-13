@@ -29,7 +29,7 @@ type AudioRecorderRef = {
 };
 
 const TRANSCRIBE_URL =
-  (import.meta.env.VITE_RUNTIME_URL ?? "http://localhost:4000/api/copilotkit")
+  (import.meta.env.VITE_RUNTIME_URL ?? "/api/copilotkit")
     .toString()
     .replace(/\/api\/copilotkit.*$/, "") + "/api/transcribe";
 

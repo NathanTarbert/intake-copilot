@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: intake-copilot-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install -g pnpm && pnpm install
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: OPENAI_API_KEY
+        sync: false
+
+  - type: web
+    name: intake-copilot-client
+    runtime: static
+    rootDir: client
+    buildCommand: npm install -g pnpm && pnpm install && pnpm build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_RUNTIME_URL
+        sync: false
+      - key: VITE_MAPBOX_TOKEN
+        sync: false

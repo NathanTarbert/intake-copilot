@@ -3,7 +3,7 @@ services:
     name: intake-copilot-backend
     runtime: node
     rootDir: backend
-    buildCommand: npx --yes pnpm@11 install
+    buildCommand: npx --yes pnpm@11 install --ignore-scripts && node node_modules/esbuild/install.js
     startCommand: npx pnpm@11 start
     envVars:
       - key: NODE_VERSION

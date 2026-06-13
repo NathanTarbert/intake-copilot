@@ -3,8 +3,8 @@ services:
     name: intake-copilot-backend
     runtime: node
     rootDir: backend
-    buildCommand: corepack enable pnpm && pnpm --dir backend install
-    startCommand: pnpm start
+    buildCommand: npx --yes pnpm@11 install
+    startCommand: npx pnpm@11 start
     envVars:
       - key: NODE_VERSION
         value: 22
@@ -15,7 +15,7 @@ services:
     name: intake-copilot-client
     runtime: static
     rootDir: client
-    buildCommand: corepack enable pnpm && pnpm --dir client install && pnpm --dir client build
+    buildCommand: npx --yes pnpm@11 install && npx pnpm@11 build
     staticPublishPath: dist
     envVars:
       - key: VITE_RUNTIME_URL

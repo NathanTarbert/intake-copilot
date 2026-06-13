@@ -14,6 +14,7 @@ import {
   Phone,
   AtSign,
   AlertTriangle,
+  Keyboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { normalizeFor, isValidFor } from "@/lib/intake-normalize";
@@ -96,6 +97,8 @@ export function VoiceIntake({
   const [normalized, setNormalized] = useState("");
   const [seconds, setSeconds] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<"voice" | "type">("voice");
+  const [typedValue, setTypedValue] = useState("");
   const tickRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -103,6 +106,7 @@ export function VoiceIntake({
     setNormalized("");
     setError(null);
     setUi("idle");
+    setTypedValue("");
   }, [field]);
 
   useEffect(() => {
@@ -170,6 +174,24 @@ export function VoiceIntake({
     setUi("idle");
   };
 
+  const submitTyped = () => {
+    const value = normalizeFor(field, typedValue);
+    setTranscript(typedValue);
+    setNormalized(value);
+    setUi("verifying");
+  };
+
+  const inputType =
+    field === "email" ? "email" : field === "phone" ? "tel" : "text";
+  const autoComplete =
+    field === "email"
+      ? "email"
+      : field === "phone"
+        ? "tel"
+        : field === "address"
+          ? "street-address"
+          : "name";
+
   const stepIdx = FIELDS.findIndex((f) => f.id === field);
   const valid = isValidFor(field, normalized);
 
@@ -184,13 +206,91 @@ export function VoiceIntake({
         </h1>
         <p className="mt-3 text-slate-600 max-w-prose">{meta.helper}</p>
 
-        <div className="mt-10 flex flex-col items-center gap-5">
+        <div className="mt-6 flex justify-center">
+          <div
+            role="tablist"
+            aria-label="Input mode"
+            className="inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === "voice"}
+              onClick={() => {
+                setMode("voice");
+                retry();
+              }}
+              disabled={disabled || ui === "recording" || ui === "transcribing" || ui === "sending"}
+              className={
+                "flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition " +
+                (mode === "voice"
+                  ? "bg-brand-600 text-white shadow"
+                  : "text-slate-600 hover:text-slate-900")
+              }
+            >
+              <Mic size={14} /> Voice
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === "type"}
+              onClick={() => {
+                setMode("type");
+                retry();
+              }}
+              disabled={disabled || ui === "recording" || ui === "transcribing" || ui === "sending"}
+              className={
+                "flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition " +
+                (mode === "type"
+                  ? "bg-brand-600 text-white shadow"
+                  : "text-slate-600 hover:text-slate-900")
+              }
+            >
+              <Keyboard size={14} /> Type
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col items-center gap-5">
           <CopilotChatAudioRecorder
             ref={recorderRef}
             style={{ display: "none" }}
           />
 
-          {ui !== "verifying" && (
+          {mode === "type" && ui !== "verifying" && (
+            <form
+              className="w-full max-w-md space-y-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!typedValue.trim() || disabled || ui === "sending") return;
+                submitTyped();
+              }}
+            >
+              <label className="block text-sm font-medium text-slate-700">
+                {meta.label}
+              </label>
+              <input
+                type={inputType}
+                autoComplete={autoComplete}
+                value={typedValue}
+                onChange={(e) => setTypedValue(e.target.value)}
+                placeholder={meta.helper}
+                disabled={disabled || ui === "sending"}
+                autoFocus
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200 disabled:opacity-50"
+              />
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={!typedValue.trim() || disabled || ui === "sending"}
+                >
+                  <Check size={14} /> Continue
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {mode === "voice" && ui !== "verifying" && (
             <>
               <button
                 type="button"
@@ -254,7 +354,7 @@ export function VoiceIntake({
               </div>
               <div className="flex gap-3 justify-end">
                 <Button variant="outline" onClick={retry}>
-                  <RotateCcw size={14} /> Re-record
+                  <RotateCcw size={14} /> {mode === "voice" ? "Re-record" : "Edit"}
                 </Button>
                 <Button
                   onClick={confirmValue}

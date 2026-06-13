@@ -152,6 +152,10 @@ export function OnboardingShell() {
 
   const handleIntroField = async (f: IntroField, value: string) => {
     if (f === "name") {
+      const parts = value.trim().split(/\s+/);
+      const firstName = parts[0] ?? "";
+      const lastName = parts.slice(1).join(" ");
+      writeState({ patient: { firstName, lastName, preferredName: firstName } });
       await sendChoice(`VOICE_INTRO_NAME: ${value}`);
     } else if (agent) {
       writeState({

@@ -8,6 +8,7 @@ import {
   ShieldAlert,
   Calendar,
   ClipboardEdit,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +16,7 @@ export type ThinkingStep = {
   id: string;
   label: string;
   sub?: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
 };
 
 type Status = "pending" | "active" | "done";
